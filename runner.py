@@ -6,11 +6,12 @@ from sys import *
 # Parameters
 ##############################################
 
-HANDS_TO_PLAY = 4000
+HANDS_TO_PLAY = 5
 BIG_BLIND = 10
 HAND_MAX = 9
 STACK = 300
 
+GAME_STATE = []
 
 ##############################################
 # Helper functions
@@ -89,6 +90,10 @@ def play_hand(players, scores):
     in_game = [True, True, True]  # czy gracz pozostaje w grze
     bet = [0, 0, 0]  # wartosci licytacji
     result = [0, 0, 0]  # bilans rozdania
+    round_state = []
+
+    print 'hand', hand
+    round_state.extend(hand[:])
 
     # rozdaj karty
     for i in range(3):
@@ -110,8 +115,8 @@ def play_hand(players, scores):
 
     best_bet1 = max(bet)
 
-    print 'hand', hand
     print 'bet1', bet
+    round_state.extend(bet[:])
 
     # pierwsza runda licytacji - info o obstawianiu
     for i in range(3):
@@ -133,6 +138,9 @@ def play_hand(players, scores):
                         hand[i] = None
                 except IOError:
                     message("EXCEPTION", "players[%i].call1()" % i)
+
+    print 'call1', in_game
+    round_state.extend(in_game[:])
 
     # pierwsza runda licytacji  - info o graczach w grze
     for i in range(3):
@@ -156,8 +164,8 @@ def play_hand(players, scores):
 
     best_bet2 = max(bet)
 
-    print 'hand', hand
     print 'bet2', bet
+    round_state.extend(bet[:])
 
     # druga runda licytacji  - info o obstawianiu
     for i in range(3):
@@ -179,6 +187,9 @@ def play_hand(players, scores):
                         hand[i] = None
                 except IOError:
                     message("EXCEPTION", "players[%i].call2()" % i)
+
+    print 'call2', in_game
+    round_state.extend(in_game[:])
 
     # druga runda licytacji  - info o  o graczach w grze
     for i in range(3):
@@ -208,9 +219,9 @@ def play_hand(players, scores):
     for i in range(3):
         scores[i] += result[i]
 
-
-    print 'call', bet
     print 'result', result
+    round_state.extend(result[:])
+    GAME_STATE.append(round_state)
 
     return scores
 
@@ -227,4 +238,5 @@ if __name__ == "__main__":
         exit()
 
     scores = game(argv[1:4])
+    print GAME_STATE
     print scores
