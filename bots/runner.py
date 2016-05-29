@@ -1,4 +1,5 @@
 import importlib
+import json
 from random import *
 from sys import *
 
@@ -6,7 +7,7 @@ from sys import *
 # Parameters
 ##############################################
 
-HANDS_TO_PLAY = 5
+HANDS_TO_PLAY = 100
 BIG_BLIND = 10
 HAND_MAX = 9
 STACK = 300
@@ -90,7 +91,7 @@ def play_hand(players, scores):
     in_game = [True, True, True]  # czy gracz pozostaje w grze
     bet = [0, 0, 0]  # wartosci licytacji
     result = [0, 0, 0]  # bilans rozdania
-    round_state = []
+    round_state = [] # zapisuj stan rundy w celu dalszej analizy
 
     print 'hand', hand
     round_state.extend(hand[:])
@@ -238,5 +239,10 @@ if __name__ == "__main__":
         exit()
 
     scores = game(argv[1:4])
-    print GAME_STATE
+
+    print "Saving game state"
+    with open("GAME_STATES.out", "w") as text_file:
+        text_file.write(json.dumps(GAME_STATE))
+    print "Game state saved!"
+
     print scores
