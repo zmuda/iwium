@@ -20,7 +20,12 @@ def map_to_binary(arr):
 
 # Maps game state to input that can be used to feed NN
 def extract_sample(game_info, winning=True):
-    winning_idx = map(lambda v: v > 0, game_info[15:]).index(winning)
+    if not (game_info[15] > 0 or game_info[16] > 0 or game_info[17] > 0):
+        # bad lack
+        winning_idx = 0
+    else:
+        winning_idx = map(lambda v: v > 0, game_info[15:]).index(winning)
+
     return [game_info[winning_idx]] + put_index_first(game_info[3:6], winning_idx) + map_to_binary(put_index_first(game_info[6:9], winning_idx)) + put_index_first(game_info[9:12], winning_idx)
 
 # Datesets constructoes
@@ -31,8 +36,8 @@ def build_bid1_nn(training_data):
         ds.addSample((winning_sample[0],), (winning_sample[1],))
     net = buildNetwork(1, 1)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
-        print trainer.train()
+    for i in range(10):
+        trainer.train()
     return net
 
 def build_bid2_nn(training_data):
@@ -42,8 +47,8 @@ def build_bid2_nn(training_data):
         ds.addSample(tuple(winning_sample[0:7]), (winning_sample[8],))
     net = buildNetwork(7, 9, 1, bias=True)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
-        print trainer.train()
+    for i in range(10):
+        trainer.train()
     return net
 
 
@@ -59,8 +64,8 @@ def build_call1_nn(training_data):
 
     net = buildNetwork(4, 6, 1, bias=True, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
-        print trainer.train()
+    for i in range(10):
+        trainer.train()
     return net
 
 def build_call2_nn(training_data):
@@ -75,21 +80,22 @@ def build_call2_nn(training_data):
 
     net = buildNetwork(10, 12, 1, bias=True, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
-        print trainer.train()
+    for i in range(10):
+        trainer.train()
     return net
 
+# Here comes the testing part
+if __name__ == "__main__":
+    training_data = load_training_data(sys.argv[1])
+    print "Training data size is %d" % len(training_data)
 
-training_data = load_training_data(sys.argv[1])
-print "Training data size is %d" % len(training_data)
+    print "This is how extracing samples work"
+    for i in range(5):
+        print training_data[i]
+        print extract_sample(training_data[i])
+        print "---"
 
-print "This is how extracing samples work"
-for i in range(5):
-    print training_data[i]
-    print extract_sample(training_data[i])
-    print "---"
-
-print "Time for some NN!"
-net = build_call2_nn(training_data)
-print net.params
-print(net.activate((5, 100, 200, 300, 1, 1, 1, 200, 200, 300)))
+    print "Time for some NN!"
+    net = build_call2_nn(training_data)
+    print net.params
+    print(net.activate((5, 100, 200, 300, 1, 1, 1, 200, 200, 300)))

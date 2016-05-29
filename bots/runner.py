@@ -7,7 +7,7 @@ from sys import *
 # Parameters
 ##############################################
 
-HANDS_TO_PLAY = 100
+HANDS_TO_PLAY = 1000
 BIG_BLIND = 10
 HAND_MAX = 9
 STACK = 300
