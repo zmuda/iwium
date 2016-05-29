@@ -35,6 +35,18 @@ def build_bid1_nn(training_data):
         print trainer.train()
     return net
 
+def build_bid2_nn(training_data):
+    ds = SupervisedDataSet(7, 1)
+    for game_state in training_data:
+        winning_sample = extract_sample(game_state)
+        ds.addSample(tuple(winning_sample[0:7]), (winning_sample[8],))
+    net = buildNetwork(7, 9, 1, bias=True)
+    trainer = BackpropTrainer(net, ds)
+    for i in range(20):
+        print trainer.train()
+    return net
+
+
 def build_call1_nn(training_data):
     ds = SupervisedDataSet(4, 1)
     for game_state in training_data:
@@ -45,7 +57,23 @@ def build_call1_nn(training_data):
         loosing_sample = extract_sample(game_state, False)
         ds.addSample(tuple(loosing_sample[0:4]), 0)
 
-    net = buildNetwork(4, 5, 5, 1, bias=True, hiddenclass=TanhLayer, outclass=SigmoidLayer)
+    net = buildNetwork(4, 6, 1, bias=True, outclass=SigmoidLayer)
+    trainer = BackpropTrainer(net, ds)
+    for i in range(20):
+        print trainer.train()
+    return net
+
+def build_call2_nn(training_data):
+    ds = SupervisedDataSet(10, 1)
+    for game_state in training_data:
+        winning_sample = extract_sample(game_state)
+        ds.addSample(tuple(winning_sample[0:10]), 1)
+
+    for game_state in training_data:
+        loosing_sample = extract_sample(game_state, False)
+        ds.addSample(tuple(loosing_sample[0:10]), 0)
+
+    net = buildNetwork(10, 12, 1, bias=True, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
     for i in range(20):
         print trainer.train()
@@ -62,9 +90,6 @@ for i in range(5):
     print "---"
 
 print "Time for some NN!"
-net = build_call1_nn(training_data)
+net = build_call2_nn(training_data)
 print net.params
-print(net.activate((5, 100, 200, 300)))
-print(net.activate((5, 100, 10, 150)))
-print(net.activate((6, 100, 10, 150)))
-print(net.activate((9, 0, 40, 3)))
+print(net.activate((5, 100, 200, 300, 1, 1, 1, 200, 200, 300)))
