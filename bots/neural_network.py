@@ -36,7 +36,7 @@ def build_bid1_nn(training_data):
         ds.addSample((winning_sample[0],), (winning_sample[1],))
     net = buildNetwork(1, 1)
     trainer = BackpropTrainer(net, ds)
-    for i in range(10):
+    for i in range(20):
         trainer.train()
     return net
 
@@ -47,7 +47,7 @@ def build_bid2_nn(training_data):
         ds.addSample(tuple(winning_sample[0:7]), (winning_sample[8],))
     net = buildNetwork(7, 9, 1, bias=True)
     trainer = BackpropTrainer(net, ds)
-    for i in range(10):
+    for i in range(20):
         trainer.train()
     return net
 
@@ -62,9 +62,9 @@ def build_call1_nn(training_data):
         loosing_sample = extract_sample(game_state, False)
         ds.addSample(tuple(loosing_sample[0:4]), 0)
 
-    net = buildNetwork(4, 6, 1, bias=True, outclass=SigmoidLayer)
+    net = buildNetwork(4, 6, 6, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(10):
+    for i in range(20):
         trainer.train()
     return net
 
@@ -78,9 +78,9 @@ def build_call2_nn(training_data):
         loosing_sample = extract_sample(game_state, False)
         ds.addSample(tuple(loosing_sample[0:10]), 0)
 
-    net = buildNetwork(10, 12, 1, bias=True, outclass=SigmoidLayer)
+    net = buildNetwork(10, 20, 20, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(10):
+    for i in range(20):
         trainer.train()
     return net
 
@@ -96,6 +96,6 @@ if __name__ == "__main__":
         print "---"
 
     print "Time for some NN!"
-    net = build_call2_nn(training_data)
-    print net.params
-    print(net.activate((5, 100, 200, 300, 1, 1, 1, 200, 200, 300)))
+    net = build_bid1_nn(training_data)
+    for i in range(10):
+        print i, ' bet is ', net.activate((i, ))

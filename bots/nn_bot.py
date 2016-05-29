@@ -44,7 +44,7 @@ class Player:
         print 'Call1data', self.call1_data()
         result = self.call1_nn.activate(tuple(self.call1_data()))[0]
         print 'Should stay', result
-        return result > 0.21
+        return result > 0.16
 
     def call1_info(self, in_game):
         self.opp1_in_game = in_game[self.opp1]
@@ -64,7 +64,7 @@ class Player:
         print 'Call2data', self.call2_data()
         result = self.call2_nn.activate(tuple(self.call2_data()))[0]
         print 'Should stay', result
-        return result > 0.21
+        return result > 0.08
 
     def call2_info(self, in_game):
         opp1_in_game = in_game[self.opp1]
