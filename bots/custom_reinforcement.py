@@ -74,6 +74,8 @@ class Context:
     def update_with_cards(self, hand):
         self.round_record.hand = copy.copy(hand)
         self.history.append(self.round_record)
+        if len(self.history) > 1000:
+            self.history.pop(0)
         self.round_record = None
 
     def set_presence(self, in_game):
