@@ -5,6 +5,7 @@ from pybrain.tools.shortcuts import buildNetwork
 from pybrain.structure import SigmoidLayer, TanhLayer
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
+REPEATS = 10
 
 def load_training_data(file):
     data = open(file)
@@ -42,7 +43,7 @@ def build_bid1_nn(training_data):
         ds.addSample((winning_sample[0],), (winning_sample[1],))
     net = buildNetwork(1, 1)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
+    for i in range(REPEATS):
         trainer.train()
     return net
 
@@ -53,7 +54,7 @@ def build_bid2_nn(training_data):
         ds.addSample(tuple(winning_sample[0:7]), (winning_sample[8],))
     net = buildNetwork(7, 9, 9, 1, bias=True)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
+    for i in range(REPEATS):
         trainer.train()
     return net
 
@@ -70,7 +71,7 @@ def build_call1_nn(training_data):
 
     net = buildNetwork(4, 6, 6, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
+    for i in range(REPEATS):
         trainer.train()
     return net
 
@@ -86,7 +87,7 @@ def build_call2_nn(training_data):
 
     net = buildNetwork(10, 20, 20, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
-    for i in range(20):
+    for i in range(REPEATS):
         trainer.train()
     return net
 

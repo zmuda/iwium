@@ -21,6 +21,9 @@ class Player:
         self.stack = 300
 
     def __init__(self):
+        self.learn()
+
+    def learn(self):
         training_data = neural_network.load_training_data("GAME_STATES_RND.out")
         self.bid1_nn = neural_network.build_bid1_nn(training_data)
         self.call1_nn = neural_network.build_call1_nn(training_data)

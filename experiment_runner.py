@@ -11,7 +11,7 @@ import time
 
 HANDS_TO_PLAY = 30000
 STEP_LENGTH = 2000
-REPEATS = 15
+REPEATS = 10
 BIG_BLIND = 10
 HAND_MAX = 9
 STACK = 300
@@ -72,7 +72,7 @@ def create_players(names):
 # Game
 ##############################################
 
-def game(names, filename):
+def game(names, filename, reinforce_nn):
     scores = [0, 0, 0]
 
     message("START GAME", str(names))
@@ -88,10 +88,15 @@ def game(names, filename):
                 print i, scores
                 scores = [0, 0, 0]
 
-                if os.path.exists("GAME_STATES.out"):
-                    os.remove("GAME_STATES.out")
-                with open("GAME_STATES.out", "w") as text_file:
-                    text_file.write(json.dumps(GAME_STATE))
+                if reinforce_nn:
+                    if os.path.exists("GAME_STATES_RND.out"):
+                        os.remove("GAME_STATES_RND.out")
+                    with open("GAME_STATES_RND.out", "w") as text_file:
+                        text_file.write(json.dumps(GAME_STATE))
+
+                    for player in players:
+                        if hasattr(player, 'learn'):
+                            player.learn()
 
     s = ""
     for i in range(3):
@@ -263,5 +268,7 @@ if __name__ == "__main__":
 
     for i in xrange(REPEATS):
         print "REPEAT no.", i
-        scores = game(names, filename)
+        reinforce_nn = len(argv) >= 5 and argv[4].lower() == 'true'
+        print 'reinforce_nn =', reinforce_nn
+        scores = game(names, filename, reinforce_nn)
         print scores

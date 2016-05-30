@@ -23,3 +23,8 @@ prepare_nn_input(custom, custom, custom)
 subprocess.call(['python', 'experiment_runner.py', custom, custom, nn])
 prepare_nn_input(static, static, static)
 subprocess.call(['python', 'experiment_runner.py', static, static, nn])
+prepare_nn_input(reinforced, reinforced, reinforced)
+subprocess.call(['python', 'experiment_runner.py', reinforced, reinforced, nn])
+
+prepare_nn_input(static, static, static)
+subprocess.call(['python', 'experiment_runner.py', reinforced, reinforced, nn, 'true'])
