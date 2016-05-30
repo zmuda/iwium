@@ -16,6 +16,8 @@ static = 'bots.simple_odds'
 reinforced = 'bots.rl.bot'
 nn = 'bots.nn.bot'
 
+subprocess.call(['python', 'experiment_runner.py', static, static, custom])
+
 subprocess.call(['python', 'experiment_runner.py', custom, custom, reinforced])
 subprocess.call(['python', 'experiment_runner.py', static, static, reinforced])
 
