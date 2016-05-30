@@ -18,6 +18,12 @@ def put_index_first(arr, idx):
 def map_to_binary(arr):
     return map(lambda e: int(e), arr)
 
+def map_bid(arr):
+    return map(lambda e: e/300.0, arr)
+
+def map_card(card):
+    return card/9.0
+
 # Maps game state to input that can be used to feed NN
 def extract_sample(game_info, winning=True):
     if not (game_info[15] > 0 or game_info[16] > 0 or game_info[17] > 0):
@@ -26,7 +32,7 @@ def extract_sample(game_info, winning=True):
     else:
         winning_idx = map(lambda v: v > 0, game_info[15:]).index(winning)
 
-    return [game_info[winning_idx]] + put_index_first(game_info[3:6], winning_idx) + map_to_binary(put_index_first(game_info[6:9], winning_idx)) + put_index_first(game_info[9:12], winning_idx)
+    return [map_card(game_info[winning_idx])] + map_bid(put_index_first(game_info[3:6], winning_idx)) + map_to_binary(put_index_first(game_info[6:9], winning_idx)) + map_bid(put_index_first(game_info[9:12], winning_idx))
 
 # Datesets constructoes
 def build_bid1_nn(training_data):
@@ -45,7 +51,7 @@ def build_bid2_nn(training_data):
     for game_state in training_data:
         winning_sample = extract_sample(game_state)
         ds.addSample(tuple(winning_sample[0:7]), (winning_sample[8],))
-    net = buildNetwork(7, 9, 1, bias=True)
+    net = buildNetwork(7, 9, 9, 1, bias=True)
     trainer = BackpropTrainer(net, ds)
     for i in range(20):
         trainer.train()
@@ -56,11 +62,11 @@ def build_call1_nn(training_data):
     ds = SupervisedDataSet(4, 1)
     for game_state in training_data:
         winning_sample = extract_sample(game_state)
-        ds.addSample(tuple(winning_sample[0:4]), 1)
+        ds.addSample(tuple(winning_sample[0:4]), (1,))
 
     for game_state in training_data:
         loosing_sample = extract_sample(game_state, False)
-        ds.addSample(tuple(loosing_sample[0:4]), 0)
+        ds.addSample(tuple(loosing_sample[0:4]), (0,))
 
     net = buildNetwork(4, 6, 6, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
@@ -72,11 +78,11 @@ def build_call2_nn(training_data):
     ds = SupervisedDataSet(10, 1)
     for game_state in training_data:
         winning_sample = extract_sample(game_state)
-        ds.addSample(tuple(winning_sample[0:10]), 1)
+        ds.addSample(tuple(winning_sample[0:10]), (1,))
 
     for game_state in training_data:
         loosing_sample = extract_sample(game_state, False)
-        ds.addSample(tuple(loosing_sample[0:10]), 0)
+        ds.addSample(tuple(loosing_sample[0:10]), (0,))
 
     net = buildNetwork(10, 20, 20, 1, outclass=SigmoidLayer)
     trainer = BackpropTrainer(net, ds)
@@ -97,5 +103,11 @@ if __name__ == "__main__":
 
     print "Time for some NN!"
     net = build_bid1_nn(training_data)
+    print net.params
     for i in range(10):
         print i, ' bet is ', net.activate((i, ))
+
+    net = build_bid2_nn(training_data)
+    print net.params
+    for i in range(10):
+        print i, ' bet is ', net.activate((i, 0.1, 0.2, 0.3, 1, 0, 1))

@@ -4,16 +4,16 @@ import neural_network
 
 class Player:
     def bet1_data(self):
-        return [self.card]
+        return [neural_network.map_card(self.card)]
 
     def call1_data(self):
-        return self.bet1_data() + [self.my_bet, self.opp1_bet, self.opp2_bet]
+        return self.bet1_data() + neural_network.map_bid([self.my_bet, self.opp1_bet, self.opp2_bet])
 
     def bet2_data(self):
         return self.call1_data() + [1, int(self.opp1_in_game), int(self.opp2_in_game)]
 
     def call2_data(self):
-        return self.bet2_data() + [self.my_bet2, self.opp1_bet2, self.opp2_bet2]
+        return self.bet2_data() + neural_network.map_bid([self.my_bet2, self.opp1_bet2, self.opp2_bet2])
 
     def name(self, index):
         self.me = index
@@ -30,9 +30,11 @@ class Player:
     def hand(self, card):
         self.card = card
 
-    def bet1(self, min):
+    def bet1(self, min_v):
         print 'Bet1data', self.bet1_data()
-        self.my_bet = max(int(self.bid1_nn.activate(tuple(self.bet1_data()))[0]), min)
+        print 'Calculated', int(self.bid1_nn.activate(tuple(self.bet1_data()))[0]*300)
+        self.my_bet = min(max(int(self.bid1_nn.activate(tuple(self.bet1_data()))[0]*300), min_v), 300)
+        # self.my_bet = 10
         print 'My bet is', self.my_bet
         return self.my_bet
 
@@ -44,15 +46,16 @@ class Player:
         print 'Call1data', self.call1_data()
         result = self.call1_nn.activate(tuple(self.call1_data()))[0]
         print 'Should stay', result
-        return result > 0.16
+        return result > 0.5
 
     def call1_info(self, in_game):
         self.opp1_in_game = in_game[self.opp1]
         self.opp2_in_game = in_game[self.opp2]
 
-    def bet2(self, min):
+    def bet2(self, min_v):
         print 'Bet2data', self.bet2_data()
-        self.my_bet2 = max(int(self.bid2_nn.activate(tuple(self.bet2_data()))[0]), min)
+        print 'calcuated', int(self.bid2_nn.activate(tuple(self.bet2_data()))[0]*300)
+        self.my_bet2 = min(max(int(self.bid2_nn.activate(tuple(self.bet2_data()))[0]*300), min_v), 300)
         print 'My bet is', self.my_bet2
         return self.my_bet2
 
@@ -64,7 +67,7 @@ class Player:
         print 'Call2data', self.call2_data()
         result = self.call2_nn.activate(tuple(self.call2_data()))[0]
         print 'Should stay', result
-        return result > 0.08
+        return result > 0.5
 
     def call2_info(self, in_game):
         opp1_in_game = in_game[self.opp1]
