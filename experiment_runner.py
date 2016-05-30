@@ -78,7 +78,7 @@ def game(names, filename, reinforce_nn):
     message("START GAME", str(names))
     players = create_players(names)
 
-    with open(filename, 'w') as results_file:
+    with open(filename, 'a') as results_file:
         for i in xrange(1, HANDS_TO_PLAY + 1):
             message("HAND START", str(i + 1))
             scores = play_hand(players, scores)
@@ -264,6 +264,7 @@ if __name__ == "__main__":
     filename = 'results/{0}_{1}.csv'.format(str(time.time()), ('_'.join(names)))
 
     with open(filename, 'w') as results_file:
+        results_file.write("round,\t")
         results_file.write(",\t".join(names))
 
     for i in xrange(REPEATS):
